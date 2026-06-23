@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudNews - Tools</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+        .card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:40px;max-width:500px;width:90%;text-align:center}
+        h1{color:#38bdf8;margin-bottom:10px}
+        p{color:#94a3b8;margin-bottom:20px}
+        .input{width:100%;padding:12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:1em;text-align:center;margin-bottom:12px}
+        .btn{width:100%;padding:14px;border:none;border-radius:8px;background:#38bdf8;color:#0f172a;font-weight:700;font-size:1em;cursor:pointer}
+        .btn:hover{background:#7dd3fc}
+        .status{margin-top:16px;padding:12px;border-radius:8px;font-size:.9em;display:none}
+        .ok{background:#0f2918;border:1px solid #22c55e;color:#22c55e}
+        .err{background:#2d1215;border:1px solid #ef4444;color:#ef4444}
+        .links{margin-top:20px;text-align:left}
+        .links a{color:#38bdf8;text-decoration:none;display:block;padding:6px 0}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>CloudTools</h1>
+        <p>Secure browsing tools</p>
+        <input class="input" id="url" placeholder="Enter URL..." autofocus>
+        <button class="btn" onclick="browse()">Browse</button>
+        <div class="status" id="status"></div>
+        <div class="links">
+            <a href="/proxy.html?url=https://youtube.com">YouTube</a>
+            <a href="/proxy.html?url=https://telegram.org">Telegram</a>
+            <a href="/proxy.html?url=https://google.com">Google</a>
+            <a href="/proxy.html?url=https://reddit.com">Reddit</a>
+        </div>
+    </div>
+    <script>
+    function browse(){
+        var u=document.getElementById('url').value;
+        if(u)window.location.href='/proxy.html?url='+encodeURIComponent(u);
+    }
+    document.getElementById('url').addEventListener('keypress',function(e){if(e.key==='Enter')browse()});
+    </script>
+</body>
+</html>

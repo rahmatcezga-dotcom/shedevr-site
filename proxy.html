@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudTools - Browsing</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0}
+        .bar{background:#1e293b;padding:10px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155}
+        .bar input{flex:1;padding:8px 12px;background:#0f172a;border:1px solid #334155;border-radius:6px;color:#e2e8f0;font-size:.9em}
+        .bar button{padding:8px 16px;background:#38bdf8;color:#0f172a;border:none;border-radius:6px;font-weight:600;cursor:pointer}
+        .bar a{color:#94a3b8;text-decoration:none;font-size:.85em}
+        #content{min-height:calc(100vh - 50px);background:#fff}
+        .loading{text-align:center;padding:40px;color:#94a3b8}
+    </style>
+</head>
+<body>
+    <div class="bar">
+        <a href="/">Home</a>
+        <input id="url" placeholder="URL...">
+        <button onclick="go()">Go</button>
+    </div>
+    <div id="content"><div class="loading">Loading...</div></div>
+    <script>
+    var params=new URLSearchParams(window.location.search);
+    var target=params.get('url');
+    if(target){
+        document.getElementById('url').value=target;
+        document.getElementById('content').innerHTML='<div class="loading">Loading '+target+'...</div>';
+        
+        fetch('/api/proxy?url='+encodeURIComponent(target))
+            .then(function(r){return r.text()})
+            .then(function(html){
+                document.getElementById('content').innerHTML=html;
+                document.title=target;
+            })
+            .catch(function(e){
+                document.getElementById('content').innerHTML='<div class="loading">Error: '+e.message+'</div>';
+            });
+    }
+    function go(){
+        var u=document.getElementById('url').value;
+        if(u)window.location.href='/proxy.html?url='+encodeURIComponent(u);
+    }
+    document.getElementById('url').addEventListener('keypress',function(e){if(e.key==='Enter')go()});
+    </script>
+</body>
+</html>
