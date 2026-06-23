@@ -21,8 +21,8 @@
         .link .desc{color:#64748b;font-size:.8em;margin-top:4px}
         #viewer{width:100%;height:calc(100vh - 52px);border:none;display:none;background:#fff}
         .loading{text-align:center;padding:60px;color:#64748b;display:none}
-        .error{text-align:center;padding:40px;color:#ef4444}
         .status{position:fixed;bottom:20px;right:20px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.8em;color:#94a3b8;z-index:100}
+        .back{position:fixed;top:60px;left:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 16px;color:#38bdf8;cursor:pointer;z-index:100;display:none;font-size:.9em}
     </style>
 </head>
 <body>
@@ -31,11 +31,12 @@
         <input id="url" placeholder="Enter URL...">
         <button onclick="go()">Go</button>
     </div>
+    <div class="back" id="back" onclick="showHome()">Back</div>
     <iframe id="viewer"></iframe>
-    <div class="loading" id="loading">Loading through proxy...</div>
+    <div class="loading" id="loading">Loading through US proxy...</div>
     <div class="home" id="home">
         <h1>CloudBrowser</h1>
-        <p>Browse any website through secure proxy</p>
+        <p>Browse any website through secure US proxy</p>
         <div class="links">
             <div class="link" onclick="browse('https://youtube.com')"><div class="icon">YT</div><div class="name">YouTube</div><div class="desc">Watch videos</div></div>
             <div class="link" onclick="browse('https://telegram.org')"><div class="icon">TG</div><div class="name">Telegram</div><div class="desc">Web version</div></div>
@@ -47,21 +48,18 @@
     </div>
     <div class="status" id="status"></div>
     <script>
-    var PROXIES = [
-        function(u){return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)},
-        function(u){return 'https://corsproxy.io/?' + encodeURIComponent(u)},
-        function(u){return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u)},
-    ];
-    var proxyIndex = 0;
+    var PROXY = 'http://45.38.19.133:8888/proxy?url=';
 
     function browse(url) {
         document.getElementById('home').style.display = 'none';
         document.getElementById('loading').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
+        document.getElementById('back').style.display = 'block';
         document.getElementById('url').value = url;
-        document.getElementById('status').textContent = 'Connecting...';
+        document.getElementById('status').textContent = 'Connecting via US server...';
 
-        var proxyUrl = PROXIES[proxyIndex](url);
+        var proxyUrl = PROXY + encodeURIComponent(url);
+
         fetch(proxyUrl)
             .then(function(r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -70,18 +68,14 @@
             .then(function(html) {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('viewer').style.display = 'block';
-                var blob = new Blob([html], {type: 'text/html'});
+                var blob = new Blob([html], {type: 'text/html; charset=utf-8'});
                 document.getElementById('viewer').src = URL.createObjectURL(blob);
-                document.getElementById('status').textContent = 'Loaded via proxy ' + (proxyIndex + 1);
+                document.getElementById('status').textContent = 'Connected via US proxy';
             })
             .catch(function(e) {
-                proxyIndex = (proxyIndex + 1) % PROXIES.length;
-                if (proxyIndex > 0) {
-                    browse(url);
-                } else {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('status').textContent = 'Error: ' + e.message;
-                }
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('status').textContent = 'Error: ' + e.message + '. Retrying...';
+                setTimeout(function() { browse(url); }, 3000);
             });
     }
 
@@ -97,6 +91,7 @@
         document.getElementById('home').style.display = 'block';
         document.getElementById('viewer').style.display = 'none';
         document.getElementById('loading').style.display = 'none';
+        document.getElementById('back').style.display = 'none';
     }
 
     document.getElementById('url').addEventListener('keypress', function(e) {
