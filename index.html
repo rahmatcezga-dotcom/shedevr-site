@@ -1,106 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudBrowser</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
-        .bar{background:#1e293b;padding:10px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;position:sticky;top:0;z-index:10}
-        .bar input{flex:1;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:.95em}
-        .bar button{padding:10px 20px;background:#38bdf8;color:#0f172a;border:none;border-radius:8px;font-weight:700;cursor:pointer}
-        .home{max-width:600px;margin:60px auto;padding:0 20px;text-align:center}
-        .home h1{color:#38bdf8;font-size:2em;margin-bottom:10px}
-        .home p{color:#94a3b8;margin-bottom:30px}
-        .links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-        .link{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;text-decoration:none;color:#e2e8f0;text-align:center;cursor:pointer;transition:all .2s}
-        .link:hover{border-color:#38bdf8;background:#1e3a5f}
-        .link .icon{font-size:2em;margin-bottom:8px}
-        .link .name{font-weight:600}
-        .link .desc{color:#64748b;font-size:.8em;margin-top:4px}
-        #viewer{width:100%;height:calc(100vh - 52px);border:none;display:none;background:#fff}
-        .loading{text-align:center;padding:60px;color:#64748b;display:none}
-        .status{position:fixed;bottom:20px;right:20px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.8em;color:#94a3b8;z-index:100}
-        .back{position:fixed;top:60px;left:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 16px;color:#38bdf8;cursor:pointer;z-index:100;display:none;font-size:.9em}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Assistant - Browse</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.bar{background:#1e293b;padding:10px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;position:sticky;top:0;z-index:10}
+.bar input{flex:1;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:.95em}
+.bar button{padding:10px 20px;background:#38bdf8;color:#0f172a;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+.home{max-width:600px;margin:60px auto;padding:0 20px;text-align:center}
+h1{color:#38bdf8;font-size:2em;margin-bottom:10px}
+.sub{color:#94a3b8;margin-bottom:30px}
+.links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.link{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center}
+.link:hover{border-color:#38bdf8;background:#1e3a5f}
+.link .ic{font-size:2em;margin-bottom:8px}
+.link .nm{font-weight:600}
+.link .ds{color:#64748b;font-size:.8em;margin-top:4px}
+#viewer{width:100%;height:calc(100vh - 52px);border:none;display:none;background:#fff}
+.loading{text-align:center;padding:60px;color:#64748b;display:none}
+.status{position:fixed;bottom:20px;right:20px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.8em;color:#94a3b8;z-index:100}
+.back{position:fixed;top:60px;left:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 16px;color:#38bdf8;cursor:pointer;z-index:100;display:none;font-size:.9em}
+</style>
 </head>
 <body>
-    <div class="bar">
-        <a href="/" style="color:#38bdf8;text-decoration:none;font-weight:700" onclick="showHome()">CloudBrowser</a>
-        <input id="url" placeholder="Enter URL...">
-        <button onclick="go()">Go</button>
-    </div>
-    <div class="back" id="back" onclick="showHome()">Back</div>
-    <iframe id="viewer"></iframe>
-    <div class="loading" id="loading">Loading through US proxy...</div>
-    <div class="home" id="home">
-        <h1>CloudBrowser</h1>
-        <p>Browse any website through secure US proxy</p>
-        <div class="links">
-            <div class="link" onclick="browse('https://youtube.com')"><div class="icon">YT</div><div class="name">YouTube</div><div class="desc">Watch videos</div></div>
-            <div class="link" onclick="browse('https://telegram.org')"><div class="icon">TG</div><div class="name">Telegram</div><div class="desc">Web version</div></div>
-            <div class="link" onclick="browse('https://google.com')"><div class="icon">G</div><div class="name">Google</div><div class="desc">Search</div></div>
-            <div class="link" onclick="browse('https://reddit.com')"><div class="icon">R</div><div class="name">Reddit</div><div class="desc">Community</div></div>
-            <div class="link" onclick="browse('https://twitter.com')"><div class="icon">X</div><div class="name">Twitter</div><div class="desc">Social</div></div>
-            <div class="link" onclick="browse('https://wikipedia.org')"><div class="icon">W</div><div class="name">Wikipedia</div><div class="desc">Encyclopedia</div></div>
-        </div>
-    </div>
-    <div class="status" id="status"></div>
-    <script>
-    var PROXY = 'http://45.38.19.133:8888/proxy?url=';
-
-    function browse(url) {
-        document.getElementById('home').style.display = 'none';
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('viewer').style.display = 'none';
-        document.getElementById('back').style.display = 'block';
-        document.getElementById('url').value = url;
-        document.getElementById('status').textContent = 'Connecting via US server...';
-
-        var proxyUrl = PROXY + encodeURIComponent(url);
-
-        fetch(proxyUrl)
-            .then(function(r) {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.text();
-            })
-            .then(function(html) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('viewer').style.display = 'block';
-                var blob = new Blob([html], {type: 'text/html; charset=utf-8'});
-                document.getElementById('viewer').src = URL.createObjectURL(blob);
-                document.getElementById('status').textContent = 'Connected via US proxy';
-            })
-            .catch(function(e) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('status').textContent = 'Error: ' + e.message + '. Retrying...';
-                setTimeout(function() { browse(url); }, 3000);
-            });
-    }
-
-    function go() {
-        var u = document.getElementById('url').value;
-        if (u) {
-            if (!u.startsWith('http')) u = 'https://' + u;
-            browse(u);
-        }
-    }
-
-    function showHome() {
-        document.getElementById('home').style.display = 'block';
-        document.getElementById('viewer').style.display = 'none';
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('back').style.display = 'none';
-    }
-
-    document.getElementById('url').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') go();
-    });
-
-    var params = new URLSearchParams(window.location.search);
-    var target = params.get('open');
-    if (target) browse(target);
-    </script>
+<div class="bar">
+<a href="/" style="color:#38bdf8;text-decoration:none;font-weight:700">AI Assistant</a>
+<input id="url" placeholder="Enter URL...">
+<button onclick="go()">Go</button>
+</div>
+<div class="back" id="back" onclick="showHome()">Back</div>
+<iframe id="viewer"></iframe>
+<div class="loading" id="loading">Connecting...</div>
+<div class="home" id="home">
+<h1>Browse Freely</h1>
+<p class="sub">Access any website through secure connection</p>
+<div class="links">
+<div class="link" onclick="goTo('https://youtube.com')"><div class="ic">YT</div><div class="nm">YouTube</div><div class="ds">Watch videos</div></div>
+<div class="link" onclick="goTo('https://telegram.org')"><div class="ic">TG</div><div class="nm">Telegram</div><div class="ds">Web version</div></div>
+<div class="link" onclick="goTo('https://google.com')"><div class="ic">G</div><div class="nm">Google</div><div class="ds">Search</div></div>
+<div class="link" onclick="goTo('https://reddit.com')"><div class="ic">R</div><div class="nm">Reddit</div><div class="ds">Community</div></div>
+<div class="link" onclick="goTo('https://twitter.com')"><div class="ic">X</div><div class="nm">Twitter</div><div class="ds">Social</div></div>
+<div class="link" onclick="goTo('https://wikipedia.org')"><div class="ic">W</div><div class="nm">Wikipedia</div><div class="ds">Encyclopedia</div></div>
+</div>
+</div>
+<div class="status" id="status"></div>
+<script>
+var T='http://45.38.19.133:8888/connect?url=';
+function goTo(u){document.getElementById('url').value=u;go()}
+function go(){var u=document.getElementById('url').value;if(!u)return;if(!u.startsWith('http'))u='https://'+u;
+document.getElementById('home').style.display='none';document.getElementById('loading').style.display='block';
+document.getElementById('viewer').style.display='none';document.getElementById('back').style.display='block';
+document.getElementById('status').textContent='Connecting...';
+fetch(T+encodeURIComponent(u)).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+.then(function(h){document.getElementById('loading').style.display='none';document.getElementById('viewer').style.display='block';
+var b=new Blob([h],{type:'text/html;charset=utf-8'});document.getElementById('viewer').src=URL.createObjectURL(b);
+document.getElementById('status').textContent='Connected!'})
+.catch(function(e){document.getElementById('loading').style.display='none';
+document.getElementById('status').textContent='Error: '+e.message;setTimeout(go,3000)})}
+function showHome(){document.getElementById('home').style.display='block';document.getElementById('viewer').style.display='none';
+document.getElementById('loading').style.display='none';document.getElementById('back').style.display='none'}
+document.getElementById('url').addEventListener('keypress',function(e){if(e.key==='Enter')go()});
+</script>
 </body>
 </html>
