@@ -19,92 +19,37 @@ h1{color:#38bdf8;font-size:2em;margin-bottom:10px}
 .link .ic{font-size:2em;margin-bottom:8px}
 .link .nm{font-weight:600}
 .link .ds{color:#64748b;font-size:.8em;margin-top:4px}
-#viewer{width:100%;height:calc(100vh - 52px);border:none;display:none;background:#fff}
-.loading{text-align:center;padding:60px;color:#64748b;display:none}
-.loading .spinner{width:40px;height:40px;border:4px solid #334155;border-top:4px solid #38bdf8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.status{position:fixed;bottom:20px;right:20px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:10px 16px;font-size:.8em;color:#94a3b8;z-index:100}
-.back{position:fixed;top:60px;left:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 16px;color:#38bdf8;cursor:pointer;z-index:100;display:none;font-size:.9em}
+.note{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:16px;margin-top:20px;color:#94a3b8;font-size:.9em;text-align:left;line-height:1.6}
+.note b{color:#38bdf8}
 </style>
 </head>
 <body>
 <div class="bar">
 <input id="url" placeholder="Enter URL...">
-<button onclick="go()">Go</button>
+<button onclick="go()">Open</button>
 </div>
-<div class="back" id="back" onclick="showHome()">Back</div>
-<iframe id="viewer"></iframe>
-<div class="loading" id="loading">
-<div class="spinner"></div>
-<div>Establishing secure connection...</div>
-<div id="load-status" style="margin-top:10px;color:#64748b;font-size:.9em"></div>
-</div>
-<div class="home" id="home">
+<div class="home">
 <h1>CloudBrowser</h1>
 <p class="sub">Access any website through secure connection</p>
 <div class="links">
-<div class="link" onclick="browse('https://youtube.com')"><div class="ic">YT</div><div class="nm">YouTube</div><div class="ds">Watch videos</div></div>
-<div class="link" onclick="browse('https://telegram.org')"><div class="ic">TG</div><div class="nm">Telegram</div><div class="ds">Web version</div></div>
-<div class="link" onclick="browse('https://google.com')"><div class="ic">G</div><div class="nm">Google</div><div class="ds">Search</div></div>
-<div class="link" onclick="browse('https://reddit.com')"><div class="ic">R</div><div class="nm">Reddit</div><div class="ds">Community</div></div>
-<div class="link" onclick="browse('https://twitter.com')"><div class="ic">X</div><div class="nm">Twitter</div><div class="ds">Social</div></div>
-<div class="link" onclick="browse('https://wikipedia.org')"><div class="ic">W</div><div class="nm">Wikipedia</div><div class="ds">Encyclopedia</div></div>
+<div class="link" onclick="openUrl('https://youtube.com')"><div class="ic">YT</div><div class="nm">YouTube</div><div class="ds">Watch videos</div></div>
+<div class="link" onclick="openUrl('https://telegram.org')"><div class="ic">TG</div><div class="nm">Telegram</div><div class="ds">Web version</div></div>
+<div class="link" onclick="openUrl('https://google.com')"><div class="ic">G</div><div class="nm">Google</div><div class="ds">Search</div></div>
+<div class="link" onclick="openUrl('https://reddit.com')"><div class="ic">R</div><div class="nm">Reddit</div><div class="ds">Community</div></div>
+<div class="link" onclick="openUrl('https://twitter.com')"><div class="ic">X</div><div class="nm">Twitter</div><div class="ds">Social</div></div>
+<div class="link" onclick="openUrl('https://wikipedia.org')"><div class="ic">W</div><div class="nm">Wikipedia</div><div class="ds">Encyclopedia</div></div>
+</div>
+<div class="note">
+<b>How it works:</b> Click a link or enter URL and press Enter.<br>
+A new window opens with the site through our US server.<br>
+Your ISP sees only connection to our server, not to YouTube.
 </div>
 </div>
-<div class="status" id="status">Ready</div>
 <script>
 var T='http://45.38.19.133:8880/connect?url=';
-
-function browse(u) {
-    document.getElementById('home').style.display='none';
-    document.getElementById('loading').style.display='block';
-    document.getElementById('viewer').style.display='none';
-    document.getElementById('back').style.display='block';
-    document.getElementById('url').value=u;
-    document.getElementById('load-status').textContent='Connecting to server...';
-    document.getElementById('status').textContent='Connecting...';
-
-    // First establish tunnel connection
-    fetch(T+'http://example.com', {mode:'no-cors'})
-        .then(function() {
-            document.getElementById('load-status').textContent='Tunnel established, loading content...';
-            // Now load the actual content
-            return fetch(T+encodeURIComponent(u));
-        })
-        .then(function(r) {
-            if (!r.ok) throw new Error('HTTP '+r.status);
-            return r.text();
-        })
-        .then(function(h) {
-            document.getElementById('loading').style.display='none';
-            document.getElementById('viewer').style.display='block';
-            document.getElementById('viewer').srcdoc=h;
-            document.getElementById('status').textContent='Connected!';
-        })
-        .catch(function(e) {
-            document.getElementById('load-status').textContent='Retrying...';
-            setTimeout(function() { browse(u); }, 2000);
-        });
-}
-
-function go() {
-    var u = document.getElementById('url').value;
-    if (u) {
-        if (!u.startsWith('http')) u = 'https://' + u;
-        browse(u);
-    }
-}
-
-function showHome() {
-    document.getElementById('home').style.display='block';
-    document.getElementById('viewer').style.display='none';
-    document.getElementById('loading').style.display='none';
-    document.getElementById('back').style.display='none';
-}
-
-document.getElementById('url').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') go();
-});
+function openUrl(u){window.open(T+encodeURIComponent(u),'_blank')}
+function go(){var u=document.getElementById('url').value;if(u){if(!u.startsWith('http'))u='https://'+u;openUrl(u)}}
+document.getElementById('url').addEventListener('keypress',function(e){if(e.key==='Enter')go()});
 </script>
 </body>
 </html>
